@@ -5,6 +5,7 @@ import express from "express";
 
 import connectDB from "./config/db.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js"; // ✅ FIX: IMPORT ADDED
 
 // Fix __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -29,8 +30,7 @@ app.use(express.json());
 
 // ✅ API ROUTES
 app.use("/api/reviews", reviewRoutes);
-app.use("/api/contact", contactRoutes);
-
+app.use("/api/contact", contactRoutes); // ✅ now defined
 
 // ✅ Health check
 app.get("/", (req, res) => {

@@ -1,7 +1,7 @@
-const Lead = require("../models/Lead");
-const sendEmail = require("../utils/sendEmail");
+import Lead from "../models/Lead.js";
+import sendEmail from "../utils/sendEmail.js";
 
-exports.submitContact = async (req, res) => {
+export const submitContact = async (req, res) => {
   try {
     const { fullName, phone, email, date, time, message } = req.body;
 
@@ -9,7 +9,7 @@ exports.submitContact = async (req, res) => {
     if (!fullName || !phone || !email || !date || !time) {
       return res.status(400).json({
         success: false,
-        message: "Missing required fields"
+        message: "Missing required fields",
       });
     }
 
@@ -20,7 +20,7 @@ exports.submitContact = async (req, res) => {
       email,
       date,
       time,
-      message
+      message,
     });
 
     // ✅ Prepare email HTML (FIXED)
@@ -39,7 +39,7 @@ exports.submitContact = async (req, res) => {
       await sendEmail({
         to: process.env.EMAIL_USER,
         subject: "📞 New Callback Request",
-        html: emailHTML
+        html: emailHTML,
       });
     } catch (mailError) {
       console.error("EMAIL SEND FAILED:", mailError);
@@ -49,7 +49,7 @@ exports.submitContact = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Callback request submitted successfully",
-      data: lead
+      data: lead,
     });
 
   } catch (error) {
@@ -57,7 +57,7 @@ exports.submitContact = async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      message: "Server error while submitting contact"
+      message: "Server error while submitting contact",
     });
   }
 };

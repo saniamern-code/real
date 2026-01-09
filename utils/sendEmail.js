@@ -1,12 +1,13 @@
 import nodemailer from "nodemailer";
 
+// ✅ Create transporter (Gmail OR custom SMTP)
 const transporter = nodemailer.createTransport({
-  // ✅ Use Gmail service if host/port not provided
+  // Use Gmail if EMAIL_HOST is not provided
   service: process.env.EMAIL_HOST ? undefined : "gmail",
 
   host: process.env.EMAIL_HOST || undefined,
   port: process.env.EMAIL_PORT ? Number(process.env.EMAIL_PORT) : undefined,
-  secure: false,
+  secure: false, // Gmail uses STARTTLS, not SSL
 
   auth: {
     user: process.env.EMAIL_USER,
@@ -14,16 +15,18 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// ✅ Verify transporter at startup (very important)
+// ✅ Verify transporter at startup (IMPORTANT for Render logs)
 transporter.verify((error, success) => {
   if (error) {
-    console.error("❌ Email transporter error:", error);
+    console.error("❌ Email transporter error:");
+    console.error(error.message);
   } else {
     console.log("✅ Email transporter ready");
   }
 });
 
-export const sendEmail = async ({ to, subject, html }) => {
+// ✅ Email sender utility
+const sendEmail = async ({ to, subject, html }) => {
   try {
     const info = await transporter.sendMail({
       from: `"Real Estate Website" <${process.env.EMAIL_USER}>`,
@@ -32,10 +35,14 @@ export const sendEmail = async ({ to, subject, html }) => {
       html,
     });
 
-    console.log("📧 Email sent:", info.messageId);
+    console.log("📧 Email sent successfully:", info.messageId);
     return info;
+
   } catch (error) {
-    console.error("❌ Email sending failed:", error);
-    throw error;
+    console.error("❌ Email sending failed:");
+    console.error(error.message);
+    throw error; // important so controller can catch it
   }
 };
+
+export default sendEmail;

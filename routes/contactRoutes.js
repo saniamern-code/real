@@ -1,6 +1,7 @@
-const express = require("express");
+import express from "express";
+import { submitContact } from "../controllers/contactController.js";
+
 const router = express.Router();
-const { submitContact } = require("../controllers/contactController");
 
 // ✅ Health check (very important for testing)
 router.get("/health", (req, res) => {
@@ -10,4 +11,4 @@ router.get("/health", (req, res) => {
 // ✅ Submit contact / callback form
 router.post("/", submitContact);
 
-module.exports = router;
+export default router;
