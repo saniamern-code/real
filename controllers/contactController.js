@@ -1,5 +1,7 @@
 import Lead from "../models/Lead.js";
-import { sendEmail } from "../utils/sendEmail.js";
+import sendEmail from "../utils/sendEmail.js";
+
+
 
 export const submitContact = async (req, res) => {
   try {
