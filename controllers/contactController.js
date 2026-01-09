@@ -1,11 +1,10 @@
 import Lead from "../models/Lead.js";
-import sendEmail from "../utils/sendEmail.js";
+import { sendEmail } from "../utils/sendEmail.js";
 
 export const submitContact = async (req, res) => {
   try {
     const { fullName, phone, email, date, time, message } = req.body;
 
-    // Basic validation
     if (!fullName || !phone || !email || !date || !time) {
       return res.status(400).json({
         success: false,
@@ -13,7 +12,6 @@ export const submitContact = async (req, res) => {
       });
     }
 
-    // Save lead to MongoDB
     const lead = await Lead.create({
       fullName,
       phone,
@@ -23,7 +21,6 @@ export const submitContact = async (req, res) => {
       message,
     });
 
-    // ✅ Prepare email HTML (FIXED)
     const emailHTML = `
       <h2>📞 New Callback Request</h2>
       <p><strong>Name:</strong> ${fullName}</p>
@@ -34,30 +31,22 @@ export const submitContact = async (req, res) => {
       <p><strong>Message:</strong> ${message || "N/A"}</p>
     `;
 
-    // ✅ Send email notification (NON-BLOCKING SAFE)
-    try {
-      await sendEmail({
-        to: process.env.EMAIL_USER,
-        subject: "📞 New Callback Request",
-        html: emailHTML,
-      });
-    } catch (mailError) {
-      console.error("EMAIL SEND FAILED:", mailError);
-      // Do NOT fail the request if email fails
-    }
+    await sendEmail({
+      to: process.env.EMAIL_USER,
+      subject: "📞 New Callback Request",
+      html: emailHTML,
+    });
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       message: "Callback request submitted successfully",
       data: lead,
     });
-
   } catch (error) {
     console.error("CONTACT API ERROR:", error);
-
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
-      message: "Server error while submitting contact",
+      message: "Server error",
     });
   }
 };
