@@ -29,6 +29,8 @@ app.use(express.json());
 
 // ✅ API ROUTES
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/contact", contactRoutes);
+
 
 // ✅ Health check
 app.get("/", (req, res) => {

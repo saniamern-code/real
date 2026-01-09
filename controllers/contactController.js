@@ -23,21 +23,28 @@ exports.submitContact = async (req, res) => {
       message
     });
 
-    // Send email notification
-    await sendEmail({
-      to: process.env.EMAIL_USER,
-      subject: "📞 New Callback Request",
-      text: `
-New lead received:
+    // ✅ Prepare email HTML (FIXED)
+    const emailHTML = `
+      <h2>📞 New Callback Request</h2>
+      <p><strong>Name:</strong> ${fullName}</p>
+      <p><strong>Phone:</strong> ${phone}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Date:</strong> ${date}</p>
+      <p><strong>Time:</strong> ${time}</p>
+      <p><strong>Message:</strong> ${message || "N/A"}</p>
+    `;
 
-Name: ${fullName}
-Phone: ${phone}
-Email: ${email}
-Date: ${date}
-Time: ${time}
-Message: ${message || "N/A"}
-      `
-    });
+    // ✅ Send email notification (NON-BLOCKING SAFE)
+    try {
+      await sendEmail({
+        to: process.env.EMAIL_USER,
+        subject: "📞 New Callback Request",
+        html: emailHTML
+      });
+    } catch (mailError) {
+      console.error("EMAIL SEND FAILED:", mailError);
+      // Do NOT fail the request if email fails
+    }
 
     return res.status(200).json({
       success: true,
